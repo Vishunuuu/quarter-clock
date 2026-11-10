@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>Quarter Clock</title>
+
+<style>
+:root {
+  --red: #ff2638;
+  --red2: #b80020;
+  --white: #ffffff;
+  --bg: #080808;
+  --panel: rgba(20,12,14,.94);
+  --muted: #a5a5a5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  padding: 18px;
+  color: var(--white);
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 50% 30%, #380810 0%, transparent 45%),
+    linear-gradient(145deg,#050505,#160609 60%,#080808);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,38,56,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,38,56,.035) 1px,transparent 1px);
+  background-size: 35px 35px;
+}
+
+.scanline {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,transparent,var(--red),transparent);
+  opacity: .3;
+  animation: scan 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  from { top: -5px; }
+  to { top: 100vh; }
+}
+
+.container {
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid rgba(255,38,56,.35);
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 0 25px rgba(255,38,56,.09),
+    inset 0 0 25px rgba(255,38,56,.025);
+  backdrop-filter: blur(15px);
+  position: relative;
+  overflow: hidden;
+  animation: appear .8s ease both;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: -70px;
+  right: -50px;
+  background: var(--red);
+  filter: blur(65px);
+  opacity: .2;
+  pointer-events: none;
+}
+
+.section-title {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--red);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hud-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0 20px;
+}
+
+.hud {
+  width: min(75vw,300px);
+  aspect-ratio: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+.ring-one {
+  inset: 0;
+  border-top-color: var(--red);
+  border-bottom-color: var(--white);
+  box-shadow: 0 0 18px rgba(255,38,56,.3);
+  animation: rotate 12s linear infinite;
+}
+
+.ring-two {
+  inset: 12px;
+  border-left: 2px solid var(--red);
+  border-right: 2px solid var(--white);
+  border-top: 1px dashed var(--red);
+  border-bottom: 1px dashed var(--white);
+  animation: reverse 18s linear infinite;
+}
+
+.ring-three {
+  inset: 25px;
+  border: 1px dashed rgba(255,255,255,.5);
+  animation: rotate 30s linear infinite;
+}
+
+.ring-four {
+  inset: 39px;
+  border: 2px solid rgba(255,38,56,.4);
+  border-top-color: var(--red);
+  animation: reverse 8s linear infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes reverse {
+  to { transform: rotate(-360deg); }
+}
+
+.hud::before,
+.hud::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 15px var(--red);
+}
+
+.hud::before { top: 10%; left: 50%; }
+.hud::after { bottom: 10%; right: 50%; }
+
+.clock-center {
+  text-align: center;
+  z-index: 2;
+}
+
+.time {
+  font-size: clamp(39px,10vw,55px);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: white;
+  text-shadow: 0 0 12px var(--red),0 0 30px rgba(255,38,56,.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.seconds {
+  color: var(--red);
+  font-size: 25px;
+  vertical-align: top;
+  margin-left: 2px;
+  text-shadow: 0 0 15px var(--red);
+}
+
+.ampm {
+  font-size: 12px;
+  color: var(--red);
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+
+.date {
+  text-align: center;
+  line-height: 1.9;
+  margin-top: 8px;
+}
+
+.date-long {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.date-short {
+  font-size: 17px;
+  color: var(--red);
+  letter-spacing: 2px;
+}
+
+.status {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #aaa;
+  margin-top: 18px;
+}
+
+/* CHIME */
+
+.next-box {
+  text-align: center;
+  padding: 16px 8px;
+  border: 1px solid rgba(255,38,56,.25);
+  border-radius: 14px;
+  background: rgba(255,38,56,.045);
+  margin-bottom: 18px;
+}
+
+.next-label {
+  color: var(--red);
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+.next-time {
+  font-size: clamp(35px,10vw,47px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin: 8px 0;
+  text-shadow: 0 0 15px var(--red);
+  font-variant-numeric: tabular-nums;
+}
+
+.next-description {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+button {
+  border: 1px solid rgba(255,38,56,.4);
+  background: rgba(255,38,56,.07);
+  color: var(--white);
+  border-radius: 9px;
+  padding: 12px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+button:hover {
+  background: rgba(255,38,56,.22);
+  border-color: var(--red);
+  box-shadow: 0 0 15px rgba(255,38,56,.3);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: scale(.96);
+}
+
+.primary {
+  background: linear-gradient(120deg,#870014,#e00027);
+  border-color: var(--red);
+}
+
+.white-btn {
+  border-color: rgba(255,255,255,.5);
+  background: rgba(255,255,255,.07);
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255,38,56,.2);
+  margin: 18px 0;
+}
+
+.field-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 7px;
+  display: block;
+}
+
+.manual-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+input, select {
+  width: 100%;
+  min-width: 0;
+  background: #160609;
+  border: 1px solid rgba(255,38,56,.4);
+  border-radius: 9px;
+  padding: 12px 8px;
+  color: white;
+  outline: none;
+  font-size: 13px;
+}
+
+input:focus, select:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 12px rgba(255,38,56,.25);
+}
+
+.add-button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255,38,56,.05);
+  border: 1px solid rgba(255,38,56,.2);
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.schedule-item button {
+  padding: 7px 10px;
+  color: #ff9ba5;
+  border-color: rgba(255,100,120,.4);
+}
+
+.empty {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  padding: 12px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  gap: 10px;
+}
+
+.switch {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--red);
+}
+
+/* TIMER */
+
+.timer-display {
+  text-align: center;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: white;
+  text-shadow: 0 0 18px var(--red);
+  font-variant-numeric: tabular-nums;
+  margin: 10px 0 18px;
+}
+
+.progress-track {
+  height: 5px;
+  background: #272727;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg,#870014,var(--red),#ffffff);
+  box-shadow: 0 0 15px var(--red);
+  transition: width .3s linear;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.custom {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 9px;
+}
+
+.footer {
+  text-align: center;
+  color: #777;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin: 25px 0 10px;
+}
+
+@media(max-width:380px) {
+  body { padding: 12px; }
+  .panel { padding: 16px; }
+  .hud { width: 260px; }
+  .time { font-size: 39px; }
+  .date-long { font-size: 16px; }
+  .presets { gap: 5px; }
+  button { font-size: 11px; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="scanline"></div>
+
+<div class="container">
+
+<!-- LIVE CLOCK -->
+
+<section class="panel">
+  <div class="hud-area">
+    <div class="hud">
+      <div class="ring ring-one"></div>
+      <div class="ring ring-two"></div>
+      <div class="ring ring-three"></div>
+      <div class="ring ring-four"></div>
+
+      <div class="clock-center">
+        <div class="time">
+          <span id="hours">00</span>:<span id="minutes">00</span><span class="seconds" id="seconds">00</span>
+        </div>
+        <div class="ampm" id="ampm">AM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="date">
+    <div class="date-long" id="longDate"></div>
+    <div class="date-short" id="shortDate"></div>
+  </div>
+
+  <div class="status">● SYSTEM ONLINE ●</div>
+</section>
+
+
+<!-- QUARTER HOUR CHIME -->
+
+<section class="panel">
+  <div class="section-title">◈ Quarter Hour Chime</div>
+
+  <div class="next-box">
+    <div class="next-label">NEXT CHIME IN</div>
+    <div class="next-time" id="nextCountdown">00:00:00</div>
+    <div class="next-description" id="nextDescription">Calculating next chime...</div>
+  </div>
+
+  <div class="toggle-row">
+    <span>Automatic quarter-hour chime</span>
+    <input class="switch" type="checkbox" id="autoToggle" checked>
+  </div>
+
+  <div class="button-row" style="margin-top:15px">
+    <button class="white-btn" onclick="skipNext()">SKIP NEXT</button>
+    <button class="primary" onclick="chimeNow()">CHIME NOW</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title">◈ Manual Chime Schedule</div>
+
+  <label class="field-label" for="manualHour">Add your own chime time</label>
+
+  <div class="manual-inputs">
+    <input id="manualHour" type="number" min="1" max="12" placeholder="Hour">
+    <input id="manualMinute" type="number" min="0" max="59" placeholder="Minute">
+    <select id="manualPeriod">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+  </div>
+
+  <button class="primary add-button" onclick="addManualChime()">+ ADD CHIME</button>
+
+  <div id="scheduleList" class="schedule-list"></div>
+</section>
+
+
+<!-- COUNTDOWN TIMER -->
+
+<section class="panel">
+  <div class="section-title">◈ Countdown Timer</div>
+
+  <div class="timer-display" id="timer">05:00</div>
+
+  <div class="progress-track">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div class="presets">
+    <button onclick="setTimer(1)">1 MIN</button>
+    <button onclick="setTimer(5)">5 MIN</button>
+    <button onclick="setTimer(10)">10 MIN</button>
+    <button onclick="setTimer(15)">15 MIN</button>
+  </div>
+
+  <div class="custom">
+    <input type="number" id="customMinutes" min="1" max="1440" placeholder="Custom minutes">
+    <button onclick="customTimer()">SET</button>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="startTimer()">START</button>
+    <button onclick="pauseTimer()">PAUSE</button>
+    <button class="white-btn" onclick="resetTimer()">RESET</button>
+  </div>
+</section>
+
+<div class="footer">QUARTER CLOCK • RED EDITION</div>
+
+</div>
+
+<script>
+
+/* AUDIO */
+
+let audioContext = null;
+
+function playTone(frequency = 850, duration = .3) {
+  try {
+    audioContext = audioContext ||
+      new (window.AudioContext || window.webkitAudioContext)();
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(.15, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      audioContext.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (error) {
+    console.log("Audio unavailable", error);
+  }
+}
+
+function playChime(count = 1) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => playTone(850, .3), i * 500);
+  }
+
+  if (navigator.vibrate) {
+    navigator.vibrate([150,100,150]);
+  }
+}
+
+function chimeNow() {
+  playChime(1);
+}
+
+
+/* LIVE CLOCK */
+
+function updateClock() {
+  const now = new Date();
+
+  let hour = now.getHours();
+  const period = hour >= 12 ? "PM" : "AM";
+
+  hour = hour % 12 || 12;
+
+  document.getElementById("hours").textContent =
+    String(hour).padStart(2,"0");
+
+  document.getElementById("minutes").textContent =
+    String(now.getMinutes()).padStart(2,"0");
+
+  document.getElementById("seconds").textContent =
+    String(now.getSeconds()).padStart(2,"0");
+
+  document.getElementById("ampm").textContent = period;
+
+  document.getElementById("longDate").textContent =
+    now.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    });
+
+  document.getElementById("shortDate").textContent =
+    now.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+
+  checkScheduledChimes(now);
+  updateNextChime(now);
+}
+
+
+/* CHIME SCHEDULE */
+
+let manualChimes = [];
+
+try {
+  manualChimes = JSON.parse(
+    localStorage.getItem("manualChimes") || "[]"
+  );
+} catch {
+  manualChimes = [];
+}
+
+let skippedEvents = new Set();
+let lastPlayedEvent = "";
+
+const autoToggle = document.getElementById("autoToggle");
+
+function saveSchedules() {
+  localStorage.setItem("manualChimes",JSON.stringify(manualChimes));
+}
+
+function formatTime(hour,minute) {
+  const period = hour >= 12 ? "PM" : "AM";
+  const h = hour % 12 || 12;
+  return h + ":" + String(minute).padStart(2,"0") + " " + period;
+}
+
+function getEventList(now) {
+  const events = [];
+
+  if (autoToggle.checked) {
+    for (let offset = 0; offset <= 1; offset++) {
+      const day = new Date(now);
+      day.setDate(day.getDate() + offset);
+      day.setHours(0,0,0,0);
+
+      for (const minute of [0,15,30,45]) {
+        const eventTime = new Date(day);
+        eventTime.setMinutes(minute);
+
+        if (eventTime > now) {
+          events.push({
+            time: eventTime,
+            type: "Automatic quarter-hour",
+            key: "auto-" + eventTime.getTime(),
+            count: minute === 0 ? 4 :
+                   minute === 15 ? 1 :
+                   minute === 30 ? 2 : 3
+          });
+        }
+      }
+    }
+  }
+
+  for (const item of manualChimes) {
+    for (let offset = 0; offset <= 1; offset++) {
+      const eventTime = new Date(now);
+      eventTime.setDate(eventTime.getDate() + offset);
+      eventTime.setHours(item.hour,item.minute,0,0);
+
+      if (eventTime > now) {
+        events.push({
+          time: eventTime,
+          type: "Manual chime",
+          key: "manual-" + item.id + "-" + eventTime.getTime(),
+          count: 1
+        });
+      }
+    }
+  }
+
+  return events.sort((a,b) => a.time - b.time);
+}
+
+function updateNextChime(now) {
+  const events = getEventList(now).filter(
+    event => !skippedEvents.has(event.key)
+  );
+
+  const next = events[0];
+
+  if (!next) {
+    document.getElementById("nextCountdown").textContent = "--:--:--";
+    document.getElementById("nextDescription").textContent =
+      "No upcoming chimes scheduled";
+    return;
+  }
+
+  const seconds = Math.max(0,Math.floor((next.time - now)/1000));
+
+  const hours = Math.floor(seconds/3600);
+  const minutes = Math.floor((seconds%3600)/60);
+  const secs = seconds%60;
+
+  document.getElementById("nextCountdown").textContent =
+    String(hours).padStart(2,"0") + ":" +
+    String(minutes).padStart(2,"0") + ":" +
+    String(secs).padStart(2,"0");
+
+  document.getElementById("nextDescription").textContent =
+    next.type + " • " +
+    next.time.toLocaleTimeString([],{
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+}
+
+function checkScheduledChimes(now) {
+  if (now.getSeconds() !== 0) return;
+
+  const minuteTime = new Date(now);
+  minuteTime.setSeconds(0,0);
+
+  const timestamp = minuteTime.getTime();
+
+  if (lastPlayedEvent === timestamp) return;
+
+  const events = [];
+
+  if (autoToggle.checked &&
+      [0,15,30,45].includes(now.getMinutes())) {
+    const minute = now.getMinutes();
+
+    events.push({
+      key: "auto-" + timestamp,
+      count: minute === 0 ? 4 :
+             minute === 15 ? 1 :
+             minute === 30 ? 2 : 3
+    });
+  }
+
+  for (const item of manualChimes) {
+    if (item.hour === now.getHours() &&
+        item.minute === now.getMinutes()) {
+      events.push({
+        key: "manual-" + item.id + "-" + timestamp,
+        count: 1
+      });
+    }
+  }
+
+  const due = events.filter(
+    event => !skippedEvents.has(event.key)
+  );
+
+  if (due.length > 0) {
+    const automatic = due.find(e => e.key.startsWith("auto-"));
+    playChime(automatic ? automatic.count : 1);
+  }
+
+  for (const event of events) {
+    skippedEvents.delete(event.key);
+  }
+
+  lastPlayedEvent = timestamp;
+}
+
+function skipNext() {
+  const now = new Date();
+
+  const next = getEventList(now).find(
+    event => !skippedEvents.has(event.key)
+  );
+
+  if (!next) {
+    alert("There is no upcoming chime to skip.");
+    return;
+  }
+
+  skippedEvents.add(next.key);
+  updateNextChime(now);
+  alert("Next chime skipped.");
+}
+
+
+/* MANUAL CHIMES */
+
+function addManualChime() {
+  const hour = Number(document.getElementById("manualHour").value);
+  const minute = Number(document.getElementById("manualMinute").value);
+  const period = document.getElementById("manualPeriod").value;
+
+  if (!Number.isInteger(hour) || hour < 1 || hour > 12 ||
+      !Number.isInteger(minute) || minute < 0 || minute > 59) {
+    alert("Enter a valid hour (1–12) and minute (0–59).");
+    return;
+  }
+
+  let actualHour = hour % 12;
+  if (period === "PM") actualHour += 12;
+
+  const exists = manualChimes.some(
+    item => item.hour === actualHour && item.minute === minute
+  );
+
+  if (exists) {
+    alert("This chime time is already added.");
+    return;
+  }
+
+  manualChimes.push({
+    id: Date.now() + Math.random().toString(16).slice(2),
+    hour: actualHour,
+    minute
+  });
+
+  saveSchedules();
+  renderSchedules();
+
+  document.getElementById("manualHour").value = "";
+  document.getElementById("manualMinute").value = "";
+
+  updateNextChime(new Date());
+}
+
+function removeManualChime(id) {
+  manualChimes = manualChimes.filter(item => item.id !== id);
+  saveSchedules();
+  renderSchedules();
+  updateNextChime(new Date());
+}
+
+function renderSchedules() {
+  const list = document.getElementById("scheduleList");
+  list.innerHTML = "";
+
+  if (manualChimes.length === 0) {
+    list.innerHTML =
+      '<div class="empty">No manual chimes added yet.</div>';
+    return;
+  }
+
+  manualChimes.sort(
+    (a,b) => (a.hour*60+a.minute) - (b.hour*60+b.minute)
+  );
+
+  manualChimes.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "schedule-item";
+
+    const time = document.createElement("span");
+    time.textContent = formatTime(item.hour,item.minute);
+
+    const remove = document.createElement("button");
+    remove.textContent = "REMOVE";
+    remove.addEventListener("click",() => removeManualChime(item.id));
+
+    row.append(time,remove);
+    list.appendChild(row);
+  });
+}
+
+
+/* COUNTDOWN TIMER */
+
+let duration = 300;
+let remaining = 300;
+let timerInterval = null;
+let running = false;
+
+function updateTimerDisplay() {
+  const mins = Math.floor(remaining/60);
+  const secs = remaining%60;
+
+  document.getElementById("timer").textContent =
+    String(mins).padStart(2,"0") + ":" +
+    String(secs).padStart(2,"0");
+
+  const percent = duration > 0 ? remaining/duration*100 : 0;
+  document.getElementById("progress").style.width = percent + "%";
+}
+
+function setTimer(minutes) {
+  clearInterval(timerInterval);
+  running = false;
+  duration = minutes*60;
+  remaining = duration;
+  updateTimerDisplay();
+  localStorage.setItem("quarterDuration",duration);
+}
+
+function customTimer() {
+  const value = Number(document.getElementById("customMinutes").value);
+
+  if (!Number.isInteger(value) || value < 1 || value > 1440) {
+    alert("Enter a valid duration from 1 to 1440 minutes.");
+    return;
+  }
+
+  setTimer(value);
+}
+
+function startTimer() {
+  if (running) return;
+
+  if (remaining <= 0) remaining = duration;
+
+  running = true;
+
+  timerInterval = setInterval(() => {
+    if (remaining > 0) {
+      remaining--;
+      updateTimerDisplay();
+    } else {
+      clearInterval(timerInterval);
+      running = false;
+      playChime(3);
+      alert("Timer completed!");
+    }
+  },1000);
+
+  requestWakeLock();
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  running = false;
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  running = false;
+  remaining = duration;
+  updateTimerDisplay();
+}
+
+const savedDuration = Number(localStorage.getItem("quarterDuration"));
+
+if (savedDuration > 0 && savedDuration <= 86400) {
+  duration = savedDuration;
+  remaining = savedDuration;
+}
+
+updateTimerDisplay();
+
+
+/* WAKE LOCK */
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ("wakeLock" in navigator) {
+      wakeLock = await navigator.wakeLock.request("screen");
+    }
+  } catch (error) {
+    console.log("Wake Lock unavailable",error);
+  }
+}
+
+document.addEventListener("visibilitychange",() => {
+  if (document.visibilityState === "visible" && running) {
+    requestWakeLock();
+  }
+});
+
+
+/* INITIALIZE */
+
+renderSchedules();
+updateClock();
+setInterval(updateClock,1000);
+
+</script>
+</body>
+</html>
